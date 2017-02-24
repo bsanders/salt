@@ -10,7 +10,6 @@ http://www.proxmox.org/
 
 Dependencies
 ============
-* IPy >= 0.81
 * requests >= 2.2.1
 
 Please note:

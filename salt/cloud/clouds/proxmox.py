@@ -23,7 +23,6 @@ Set up the cloud configuration at ``/etc/salt/cloud.providers`` or
 
 :maintainer: Frank Klaassen <frank@cloudright.nl>
 :depends: requests >= 2.2.1
-:depends: IPy >= 0.81
 '''
 
 # Import python libs
@@ -34,6 +33,7 @@ import logging
 
 # Import salt libs
 import salt.ext.six as six
+import salt.ext.ipaddress as ipaddress
 import salt.utils
 
 # Import salt cloud libs
@@ -51,12 +51,6 @@ try:
     HAS_REQUESTS = True
 except ImportError:
     HAS_REQUESTS = False
-
-try:
-    from IPy import IP
-    HAS_IPY = True
-except ImportError:
-    HAS_IPY = False
 
 # Get logging started
 log = logging.getLogger(__name__)
@@ -94,7 +88,6 @@ def get_dependencies():
     '''
     deps = {
         'requests': HAS_REQUESTS,
-        'IPy': HAS_IPY
     }
     return config.check_driver_dependencies(
         __virtualname__,
@@ -445,7 +438,7 @@ def list_nodes(call=None):
         if 'ip_address' in vm_details['config'] and vm_details['config']['ip_address'] != '-':
             ips = vm_details['config']['ip_address'].split(' ')
             for ip_ in ips:
-                if IP(ip_).iptype() == 'PRIVATE':
+                if ipaddress.IPv4Address(ip_).is_private:
                     private_ips.append(str(ip_))
                 else:
                     public_ips.append(str(ip_))
